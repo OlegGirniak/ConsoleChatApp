@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <assert.h>
 #include <vector>
@@ -83,7 +84,7 @@ int main()
 	WSAStart();
 
 	SOCKET client_socket;
-	
+
 	sockaddr_in server_addr{};
 
 	CreateSocket(client_socket, &server_addr);

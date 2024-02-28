@@ -9,14 +9,13 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-#define PORT (2222)
 
+#define PORT (2222)
 
 
 using std::cout, std::endl, std::string, std::thread, std::mutex,
       std::vector, std::pair, std::move, std::ref, std::lock_guard, 
       std::lock, std::make_pair;
-
 
 
 WSADATA wsa;
