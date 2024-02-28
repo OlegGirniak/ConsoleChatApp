@@ -12,6 +12,8 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
+#define SIZE (1024)
+
 using std::cout, std::cin, std::endl, std::string, std::thread, std::mutex, std::vector, std::unordered_map, std::pair, std::move, std::ref, std::getline;
 
 WSADATA wsa;
@@ -47,7 +49,6 @@ void Send(SOCKET& client_socket, struct sockaddr_in* server_addr)
 
 	while (message != "Exit")
 	{
-		cout << "Enter message: ";
 		getline(cin, message);
 
 		assert((send(client_socket, message.c_str(), message.size(), 0)) != -1);
@@ -56,6 +57,26 @@ void Send(SOCKET& client_socket, struct sockaddr_in* server_addr)
 	}
 }
 
+void Receive(SOCKET& client_socket)
+{
+	char buffer[SIZE]{};
+
+	while (true)
+	{
+		int bytes_received = recv(client_socket, buffer, SIZE, 0);
+
+		if (bytes_received > 0)
+		{
+			for (int i = 0; i < strlen(buffer); i++)
+			{
+				cout << buffer[i];
+			}
+			cout << endl;
+		}
+
+		memset(buffer, 0, SIZE);
+	}
+}
 
 int main()
 {
@@ -67,6 +88,11 @@ int main()
 
 	CreateSocket(client_socket, &server_addr);
 
-	Send(client_socket, &server_addr);
+	thread recv_thread = thread(Receive, ref(client_socket));
 
+	thread send_thread = thread(Send, ref(client_socket), &server_addr);
+
+
+	recv_thread.join();
+	send_thread.join();
 }

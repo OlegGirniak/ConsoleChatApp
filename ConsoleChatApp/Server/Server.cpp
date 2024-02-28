@@ -11,13 +11,19 @@
 
 #define PORT (2222)
 
-using std::cout, std::endl, std::string, std::thread, std::mutex, std::vector, std::unordered_map, std::pair, std::move, std::ref, std::lock_guard, std::lock;
+
+
+using std::cout, std::endl, std::string, std::thread, std::mutex,
+      std::vector, std::pair, std::move, std::ref, std::lock_guard, 
+      std::lock, std::make_pair;
+
+
 
 WSADATA wsa;
 
 vector<thread> thread_pool;
 mutex client_sockets_mutex;
-unordered_map<SOCKET, sockaddr_in> client_sockets;
+vector<pair<SOCKET, sockaddr_in>> client_sockets;
 
 void WSAStart()
 {
@@ -63,24 +69,37 @@ void ServerProccess(SOCKET client_socket, sockaddr_in client_addr)
                 cout << buffer[i];
             }
             cout << endl;
+
+            // send all clients
+            for (auto& client : client_sockets)
+            {
+                if (client.first != client_socket)
+                {
+                    send(client.first, buffer, buffer_size, 0);
+                }
+            }
+
         }
-        else if (bytes_received == 0)
+        else 
         {
             cout << "Client disconnected" << endl;
             break;
         }
-        else
-        {
-            cout << "recv failed with error: " << WSAGetLastError() << endl;
-            break;
-        }
+
         memset(buffer, 0, buffer_size);
     }
 
     closesocket(client_socket);
     {
         lock_guard<mutex> lock(client_sockets_mutex);
-        client_sockets.erase(client_socket);
+        for (auto it = client_sockets.begin(); it != client_sockets.end(); ++it)
+        {
+            if (it->first == client_socket)
+            {
+                client_sockets.erase(it);
+                break;
+            }
+        }
     }
 }
 
@@ -97,7 +116,7 @@ void AcceptNewClient(SOCKET server_socket, struct sockaddr_in* server_addr)
 
         {
             lock_guard<mutex> lock(client_sockets_mutex);
-            client_sockets.insert(pair<SOCKET, sockaddr_in>(client_socket, client_addr));
+            client_sockets.push_back(make_pair(client_socket, client_addr));
         }
 
         thread_pool.push_back(move(thread(ServerProccess, client_socket, client_addr)));
