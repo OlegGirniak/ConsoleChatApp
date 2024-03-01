@@ -13,9 +13,18 @@
 #define PORT (2222)
 
 
-using std::cout, std::endl, std::string, std::thread, std::mutex,
-      std::vector, std::pair, std::move, std::ref, std::lock_guard, 
-      std::lock, std::make_pair;
+using std::cout;
+using std::endl;
+using std::string;
+using std::thread;
+using std::mutex;
+using std::vector;
+using std::pair;
+using std::move;
+using std::ref;
+using std::lock_guard;
+using std::lock;
+using std::make_pair;
 
 
 WSADATA wsa;
@@ -79,7 +88,7 @@ void ServerProccess(SOCKET client_socket, sockaddr_in client_addr)
             }
 
         }
-        else 
+        else
         {
             cout << "Client disconnected" << endl;
             break;

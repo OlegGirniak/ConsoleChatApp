@@ -10,12 +10,19 @@
 
 #pragma warning(disable: 4996)
 
-#define PORT (2222)
-
 #define SIZE (1024)
 
-using std::cout, std::cin, std::endl, std::string, std::thread, std::mutex,
-std::vector, std::pair, std::move, std::ref, std::getline;
+using std::cout;
+using std::cin;
+using std::endl;
+using std::string;
+using std::thread;
+using std::mutex;
+using std::vector;
+using std::pair;
+using std::move;
+using std::ref;
+using std::getline;
 
 
 enum class UserChoice
@@ -28,7 +35,6 @@ enum class UserChoice
 
 class User
 {
-
     static User* instance;
 
     string name;
@@ -117,16 +123,24 @@ private:
 
     void Send()
     {
-        string message;
+        string text;
 
-        while (message != "Exit")
+        while (text != "Exit")
         {
-            getline(cin, message);
+            getline(cin, text);
+
+            string message = name + ": " + text;
 
             assert((send(client_socket, message.c_str(), message.size(), 0)) != -1);
 
             //cout << "Messages is sent" << endl;
         }
+
+        closesocket(client_socket);
+
+        WSACleanup();
+
+        exit(0);
     }
 
     void Receive()
