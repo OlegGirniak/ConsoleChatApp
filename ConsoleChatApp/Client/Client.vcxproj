@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h" />
+    <ClInclude Include="HashPasswordService .h" />
     <ClInclude Include="SQLiteService.h" />
     <ClInclude Include="UIFunc.h" />
     <ClInclude Include="User.h" />

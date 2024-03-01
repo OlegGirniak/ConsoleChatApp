@@ -1,6 +1,7 @@
 #pragma once
 #include "User.h"
 #include "SQLiteService.h"
+#include "HashPasswordService .h"
 #include <regex>
 
 #define SERVER_IP "127.0.0.1"
@@ -60,6 +61,8 @@ User* SignUp()
 
 	} while (ifUserExists);
 
+	password = HashPasswordService::Hash(password);
+
 	SQLiteService::InsertUser(name, password);
 
 	SQLiteService::CloseDatabase();
@@ -98,6 +101,8 @@ User* SignIn()
 			getline(cin, password);
 
 		} while (std::regex_search(password, spaces_pattern));
+
+		password = HashPasswordService::Hash(password);
 
 		ifUserExists = SQLiteService::CheckUser(name, password);
 
